@@ -94,9 +94,6 @@ bool Vector::operator==(const Vector &other) const {
     return abs(data[0] - other.data[0]) < epsilon &&
            abs(data[1] - other.data[1]) < epsilon &&
            abs(data[2] - other.data[2]) < epsilon;
-
-    // return (data[0] == other.data[0])  && (data[1] == other.data[1])  &&
-    // (data[2] == other.data[2]) ;
 }
 
 bool Vector::operator!=(const Vector &other) const { return !(*this == other); }
@@ -172,8 +169,6 @@ void Ray::build_ray(const Camera &camera, int x, int y, bool antialiasing) {
         double r1 = dist(gen), r2 = dist(gen);
         double a = cos(2 * M_PI * r1) * sqrt(1 - r2) / 2;
         double b = sin(2 * M_PI * r1) * sqrt(1 - r2) / 2;
-
-        // std::cout << x << " " << y << std::endl;
 
         P += Vector(a, b, 0);
     }
@@ -266,7 +261,6 @@ Ray Ray::build_refracted_ray(Intersect &intersection_point) const {
     double refracted_internal_angle =
         1 - (n1 / n2) * (n1 / n2) * (1 - __dot_product * __dot_product);
 
-    // std::cout << depth << "\n";
 
     Ray refracted_ray;
 
@@ -295,8 +289,6 @@ Vector Scene::get_color(const Ray &ray, int depth) {
         return Vector(0, 0, 0);
     if (depth < 0)
         return Vector(0, 0, 0);
-
-    // const Scene &scene = *this;
 
     int material_type =
         intersection_point.object->object_properties.material_type;
@@ -457,7 +449,6 @@ void draw_image(int W, int H) {
             }
 
             color = color / RAY_NUMBER;
-            // print(color);
             double gamma = 1 / 2.2;
 
             image[(i * W + j) * 3 + 0] =

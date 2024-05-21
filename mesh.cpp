@@ -392,8 +392,6 @@ Intersect TriangleMesh::__intersect(const Ray &ray, int left, int right) const {
 Intersect TriangleMesh::intersect(const Ray &ray) const {
     int size = indices.size();
 
-    // return __intersect(ray, 0, size);
-
     double cur_dist, best_dist = std::numeric_limits<double>::max();
 
     if (!root->bbox->intersect(ray, cur_dist)) {
@@ -412,17 +410,7 @@ Intersect TriangleMesh::intersect(const Ray &ray) const {
         auto bvh = my_stack.back();
         my_stack.pop_back();
 
-        // if (visited.find(bvh) != visited.end()) {
-        //     // std::cout << "Already visited BVH node: " << bvh << std::endl;
-        //     continue;
-        // }
-
-        // visited.insert(bvh);
-
-        // std::cout << "Processing BVH node: " << bvh << std::endl;
-
         if (bvh->left_child != nullptr && bvh->right_child != nullptr) {
-            // std::cout << "Both children exist." << std::endl;
 
             if (bvh->left_child->bbox->intersect(ray, cur_dist)) {
                 if (cur_dist < best_dist) {
@@ -555,8 +543,6 @@ void BVH::__build_bvh(BVH *cur_bvh, TriangleMesh &triangle_mesh, int left_val,
     Vector diag = cur_bvh->bbox->b_max - cur_bvh->bbox->b_min;
     Vector middle_diag = cur_bvh->bbox->b_min + diag * 0.5;
 
-    // longest_axis
-    //std::cout << diag[0] << " " << diag[1] << " " << diag[2] << "\n";
     int long_axis = 0;
     if (diag[1] > diag[0]) {
         long_axis = 1;
@@ -596,16 +582,6 @@ void BVH::build_bvh(TriangleMesh &triangle_mesh) {
     int size = triangle_mesh.indices.size();
 
     __build_bvh(this, triangle_mesh, 0, size);
-
-    // std::cout << "cur" << "\n";
-
-    // for (int i = 0; i < bvh_start_triangle.size(); ++i) {
-    // std::cout << bvh_start_triangle[i] << " " << i << "\n";
-    //}
-    //
-    // for (int i = 0; i < bvh_start_triangle.size(); ++i) {
-    // std::cout << bvh_end_triangle[i] << " " << i << "\n";
-    //}
 }
 
 BVH::BVH(TriangleMesh &triangle_mesh) { build_bvh(triangle_mesh); }
