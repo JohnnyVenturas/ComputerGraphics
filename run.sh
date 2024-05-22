@@ -2,7 +2,7 @@
 
 cmake --build ${PWD} --parallel $(nproc)
 
-./raytracer
+time ./raytracer
 
-firefox image.png
+xdg-open image.png
 

@@ -16,6 +16,8 @@
 #include "raytracer.h"
 #endif
 
+#define INTERPOLATION 0
+
 #include "mesh.h"
 
 void TriangleMesh::readOBJ(const char *obj) {
@@ -357,30 +359,37 @@ Intersect TriangleMesh::__intersect(const Ray &ray, int left, int right) const {
         // unnormalized normal
         Vector N = cross(e1, e2);
         double u_x_N = dot(ray.u, N);
-
         double beta = dot(e2, cross(A - ray.O, ray.u)) / u_x_N;
-
         double gamma = -dot(e1, cross(A - ray.O, ray.u)) / u_x_N;
-
         double alpha = 1 - beta - gamma;
-        if (alpha < 0. || alpha > 1. || beta < 0. || beta > 1. || gamma < 0. ||
-            gamma > 1.)
+        if (alpha <= 0. || alpha >= 1. || beta <= 0. || beta >= 1. || gamma <= 0. ||
+            gamma >= 1.)
             continue;
-
         double t = dot(A - ray.O, N) / u_x_N;
 
-        const Vector P = ray.O + t * ray.u;
+        if(t > current_intersect.t) continue;
+
+
+        Vector P = ray.O + t * ray.u;
 
         // Intersection normal (common behaviour normal)
+        Vector Normal = alpha*normalA + beta*normalB + gamma* normalC;
 
         N.normalize();
-        Vector Normal = alpha * normalA + beta * normalB + gamma * normalC;
         Normal.normalize();
+
+        if (t < 0.)
+            continue;
 
         if (t < current_intersect.t) {
             current_intersect.intersect = true;
             current_intersect.P = P;
+#if INTERPOLATION == 1
             current_intersect.N = Normal;
+#else
+            current_intersect.N = N;
+#endif
+
             current_intersect.t = t;
             current_intersect.object = this;
         }
@@ -427,8 +436,9 @@ Intersect TriangleMesh::intersect(const Ray &ray) const {
             }
         } else {
             curr_intersect = __intersect(ray, bvh->left, bvh->right);
-            if(curr_intersect.t < best_intersect.t)
+            if (curr_intersect.t < best_intersect.t) {
                 best_intersect = curr_intersect;
+            }
         }
     }
     return best_intersect;
@@ -439,9 +449,12 @@ void TriangleMesh::transform(double scale, const Vector &direction) {
     for (auto &vertex : vertices) {
         vertex = vertex * scale + direction;
     }
+
 }
 
 void BoundingBox::build_box(const TriangleMesh &triangle_mesh) {
+    b_min = Vector(1e100, 1e100, 1e100);
+    b_max = Vector(-1e100, -1e100, -1e100);
 
     for (const auto &vertex : triangle_mesh.vertices) {
         b_min[0] = std::min(b_min[0], vertex[0]);
@@ -455,8 +468,8 @@ void BoundingBox::build_box(const TriangleMesh &triangle_mesh) {
 }
 
 void BoundingBox::build_box(TriangleMesh &triangle_mesh, int left, int right) {
-    b_min = Vector(1e100, 1e100, 1e100);
-     b_max = Vector(-1e100, -1e100, -1e100);
+    b_min = Vector(1e128, 1e128, 1e128);
+    b_max = Vector(-1e128, -1e128, -1e128);
     for (int i = left; i < right; ++i) {
         int idxA = triangle_mesh.indices[i].vtxi;
         int idxB = triangle_mesh.indices[i].vtxj;
@@ -516,7 +529,7 @@ bool BoundingBox::intersect(const Ray &ray, double &dist) const {
     double tmin = std::max({tmin_x, tmin_y, tmin_z});
     double tmax = std::min({tmax_x, tmax_y, tmax_z});
 
-    if (tmin < tmax && tmax >= 0) {
+    if (tmin <= tmax && tmax >= 0) {
         dist = tmin >= 0 ? tmin : tmax;
         return true;
     }
@@ -585,3 +598,5 @@ void BVH::build_bvh(TriangleMesh &triangle_mesh) {
 }
 
 BVH::BVH(TriangleMesh &triangle_mesh) { build_bvh(triangle_mesh); }
+
+

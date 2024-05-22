@@ -6,5 +6,5 @@ CXX_DEFINES =
 
 CXX_INCLUDES = -I/home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/stb
 
-CXX_FLAGS = -Wall -Wextra -O3 -fopenmp
+CXX_FLAGS = -O3 -fopenmp
 

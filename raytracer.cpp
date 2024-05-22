@@ -13,14 +13,21 @@
 
 #include "stb_image.h"
 #include <iostream>
-#define RAY_NUMBER 200
+#define RAY_NUMBER 64
+
+#define RAYTRACING 1
+#define FRESNEL 1
+#define ANTIALIASING 1
+#define CAT 1
+#define INTERPOLATION 1
+#define LIGHT_BOUNCE 6
 
 #include "mesh.h"
 
 // static std::random_device rd;
 static std::default_random_engine gen(10);
 static std::uniform_real_distribution<double> dist(0.0, 1.0);
-double epsilon = 1e-5;
+double epsilon = 1e-7;
 Vector::Vector(double x, double y, double z) {
     data[0] = x;
     data[1] = y;
@@ -223,19 +230,27 @@ Intersect Scene::intersect(const Ray &ray) const {
         }
     }
 
+     //std::cout << "therre are \n";
+     //std::cout << intersect_point.object << " ";
+     //std::cout <<"muie la cur\n";
+
     return intersect_point;
 }
 
 Ray Ray::build_reflected_ray(Intersect &intersection_point) const {
 
+    //std::cout << intersection_point.N.norm() << "\n";
     Ray reflected_ray;
     Vector reflected_direction =
         u - 2 * dot(u, intersection_point.N) * intersection_point.N;
 
     reflected_ray.O = intersection_point.P + epsilon * intersection_point.N;
+    reflected_direction.normalize();
+
     reflected_ray.u = reflected_direction;
 
-    reflected_direction.normalize();
+    //std::cout << dot(intersection_point.N, reflected_ray.u) <<"\n";
+
 
     return reflected_ray;
 }
@@ -261,7 +276,6 @@ Ray Ray::build_refracted_ray(Intersect &intersection_point) const {
     double refracted_internal_angle =
         1 - (n1 / n2) * (n1 / n2) * (1 - __dot_product * __dot_product);
 
-
     Ray refracted_ray;
 
     if (refracted_internal_angle < 0.) {
@@ -283,12 +297,12 @@ void Ray::randomize_direction() {}
 
 Vector Scene::get_color(const Ray &ray, int depth) {
 
-    Intersect intersection_point = this->intersect(ray);
 
-    if (!intersection_point.intersect)
-        return Vector(0, 0, 0);
     if (depth < 0)
         return Vector(0, 0, 0);
+
+    Intersect intersection_point = this->intersect(ray);
+    if(!intersection_point.intersect) return Vector(0,0,0);
 
     int material_type =
         intersection_point.object->object_properties.material_type;
@@ -323,10 +337,10 @@ Vector Scene::get_color(const Ray &ray, int depth) {
         const Intersect scene_intersect = this->intersect(light_ray);
 
         double distance_to_light = (intersection_point.P - light_ray.O).norm();
-        double check = scene_intersect.t < distance_to_light ? 0. : 1.;
+        double check = scene_intersect.t + epsilon< distance_to_light ? 0. : 1.;
 
-        Vector &&L0 = light_source.intensity / (4 * M_PI * d * d) * 1 / M_PI *
-                      check *
+        Vector L0 = light_source.intensity / (4 * M_PI * d * d) * 1 / M_PI *
+               check *
                       std::max(dot(intersection_point.N, -light_ray.u), 0.) *
                       intersection_point.object->object_properties.albedo;
 
@@ -336,9 +350,12 @@ Vector Scene::get_color(const Ray &ray, int depth) {
         Ray random_ray =
             Ray(intersection_point.P + intersection_point.N * epsilon, ray_end);
 
-        
+#if RAYTRACING == 0
+        return L0;
+#else
         return L0 + intersection_point.object->object_properties.albedo *
                         get_color(random_ray, depth - 1);
+#endif
     }
 
     // BUILDING REFLECTIVE RAY
@@ -365,13 +382,19 @@ void draw_image(int W, int H) {
     Vector color_grey = Vector(.5, .5, .5);
     Vector color_green(0, 128. / 255, 0), color_magenta(1, 0, 1),
         color_blue(0, 0, 1), color_red(1, 0, 0), color_yellow(1, 1, 0),
-        color_cyan(0, 1, 1);
+        color_cyan(0, 1, 1), color_cat(0.3, 0.2, 0.25);
 
     std::vector<Geometry *> objects;
 
+#if FRESNEL == 1
     ObjectProperties reflective = ObjectProperties(color_white, REFLECTIVE);
     ObjectProperties hollow = ObjectProperties(color_white, BIFRACTIVE, 1, 1.5);
     ObjectProperties bifractive = ObjectProperties(color_white, BIFRACTIVE);
+#else
+    ObjectProperties reflective = ObjectProperties(color_white, REFLECTIVE);
+    ObjectProperties hollow = ObjectProperties(color_white, REFRACTIVE, 1, 1.5);
+    ObjectProperties bifractive = ObjectProperties(color_white, REFRACTIVE);
+#endif
 
     ObjectProperties difusive_green = ObjectProperties(color_green, DIFUSIVE);
     ObjectProperties difusive_magenta =
@@ -382,6 +405,7 @@ void draw_image(int W, int H) {
     ObjectProperties difusive_cyan = ObjectProperties(color_cyan, DIFUSIVE);
     ObjectProperties difusive_white = ObjectProperties(color_white, DIFUSIVE);
     ObjectProperties difusive_grey = ObjectProperties(color_grey, DIFUSIVE);
+    ObjectProperties difusive_cat = ObjectProperties(color_cat, DIFUSIVE);
 
     Sphere reflective_sphere(Vector(-20, 0, 0), 10, reflective);
     Sphere hollow_sphere(Vector(20, 0, 0), 10, hollow);
@@ -406,11 +430,12 @@ void draw_image(int W, int H) {
     Sphere wall_right(Vector(1000, 0, 0), 940, difusive_yellow);
 
     Sphere wall_left(Vector(-1000, 0, 0), 940, difusive_cyan);
-
-    // objects.push_back(&reflective_sphere);
-    // objects.push_back(&hollow_sphere);
-    // objects.push_back(&hollow_inner);
-    // objects.push_back(&refractive_sphere);
+#if CAT == 0
+    objects.push_back(&reflective_sphere);
+    objects.push_back(&hollow_sphere);
+    objects.push_back(&hollow_inner);
+    objects.push_back(&refractive_sphere);
+#endif
     objects.push_back(&wall_left);
     objects.push_back(&wall_right);
     objects.push_back(&wall_top);
@@ -418,21 +443,19 @@ void draw_image(int W, int H) {
     objects.push_back(&wall_front);
     objects.push_back(&wall_behind);
 
-    TriangleMesh cat_mesh("./cat/cat.obj", difusive_grey);
-    cat_mesh.transform(0.6, Vector(0, -10, 0));
+#if CAT == 1
+    TriangleMesh *cat_mesh = new TriangleMesh("./cat/cat.obj", difusive_cat);
 
-    BoundingBox bbox(cat_mesh);
-    //cat_mesh.bbox = bbox;
-
-    cat_mesh.root = new BVH(cat_mesh);
-
-    objects.push_back(&cat_mesh);
+    cat_mesh ->transform(0.6, Vector(0, -10, -10));
+    cat_mesh -> root = new BVH(*cat_mesh);
+    objects.push_back(cat_mesh);
+#endif
 
     Scene scene(objects, light_source);
 
     std::vector<unsigned char> image(W * H * 3, 0);
 
- #pragma omp parallel for
+#pragma omp parallel for
     for (int i = 0; i < H; i++) {
         for (int j = 0; j < W; j++) {
 
@@ -442,10 +465,9 @@ void draw_image(int W, int H) {
                 int x = j, y = H - i - 1;
 
                 // true enables anti-aliasing, revert to false otherwise
-                Ray camera_ray(camera, x, y, true);
+                Ray camera_ray(camera, x, y, ANTIALIASING);
 
-                Intersect &&intersect_object = scene.intersect(camera_ray);
-                color += scene.get_color(camera_ray, 5);
+                color += scene.get_color(camera_ray, LIGHT_BOUNCE - 1);
             }
 
             color = color / RAY_NUMBER;
@@ -457,15 +479,19 @@ void draw_image(int W, int H) {
                 std::min(std::pow(color.data[1], gamma), 255.0);
             image[(i * W + j) * 3 + 2] =
                 std::min(std::pow(color.data[2], gamma), 255.0);
-        }
+        }   
     }
+
+     //std::cout <<"Sanity check\n";
+     //std::cout << static_cast<Geometry *>(cat_mesh) << " " << cat_mesh -> object_properties.material_type<< "\n";
+     //std::cout <<"End\n";
 
     stbi_write_png("image.png", W, H, 3, &image[0], 0);
 }
 
 int main() {
-    int W = 500;
-    int H = 500;
+    int W = 512;
+    int H = 512;
 
     draw_image(W, H);
 
