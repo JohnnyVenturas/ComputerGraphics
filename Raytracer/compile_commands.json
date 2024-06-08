@@ -1,0 +1,14 @@
+[
+{
+  "directory": "/home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/Raytracer/build_directory",
+  "command": "/usr/bin/c++   -O3 -o CMakeFiles/mesh.dir/mesh.cpp.o -c /home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/Raytracer/mesh.cpp",
+  "file": "/home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/Raytracer/mesh.cpp",
+  "output": "CMakeFiles/mesh.dir/mesh.cpp.o"
+},
+{
+  "directory": "/home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/Raytracer/build_directory",
+  "command": "/usr/bin/c++  -I/home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/Raytracer/stb -O3 -fopenmp -o CMakeFiles/raytracer.dir/raytracer.cpp.o -c /home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/Raytracer/raytracer.cpp",
+  "file": "/home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/Raytracer/raytracer.cpp",
+  "output": "CMakeFiles/raytracer.dir/raytracer.cpp.o"
+}
+]
