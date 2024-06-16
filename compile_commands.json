@@ -1,14 +1,50 @@
 [
 {
-  "directory": "/home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics",
-  "command": "/usr/bin/c++   -O3 -o CMakeFiles/mesh.dir/mesh.cpp.o -c /home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/mesh.cpp",
+  "directory": "/home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/build_directory",
+  "command": "/usr/bin/c++   -O3 -Wredundant-move -Wpessimizing-move -o CMakeFiles/Vector.dir/Vector.cpp.o -c /home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/Vector.cpp",
+  "file": "/home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/Vector.cpp",
+  "output": "CMakeFiles/Vector.dir/Vector.cpp.o"
+},
+{
+  "directory": "/home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/build_directory",
+  "command": "/usr/bin/cc  -I/home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics -O3 -DNDEBUG -o CMakeFiles/lbfgs.dir/lbfgs.c.o -c /home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/lbfgs.c",
+  "file": "/home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/lbfgs.c",
+  "output": "CMakeFiles/lbfgs.dir/lbfgs.c.o"
+},
+{
+  "directory": "/home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/build_directory",
+  "command": "/usr/bin/c++  -I/home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/stb -I/home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics -O3 -Wredundant-move -Wpessimizing-move -o CMakeFiles/raytracer.dir/raytracer.cpp.o -c /home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/raytracer.cpp",
+  "file": "/home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/raytracer.cpp",
+  "output": "CMakeFiles/raytracer.dir/raytracer.cpp.o"
+},
+{
+  "directory": "/home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/build_directory",
+  "command": "/usr/bin/c++   -O3 -Wredundant-move -Wpessimizing-move -o CMakeFiles/Scene.dir/Scene.cpp.o -c /home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/Scene.cpp",
+  "file": "/home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/Scene.cpp",
+  "output": "CMakeFiles/Scene.dir/Scene.cpp.o"
+},
+{
+  "directory": "/home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/build_directory",
+  "command": "/usr/bin/c++  -I/home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/stb -I/home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics -O3 -Wredundant-move -Wpessimizing-move -fopenmp -o CMakeFiles/fluids.dir/fluids.cpp.o -c /home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/fluids.cpp",
+  "file": "/home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/fluids.cpp",
+  "output": "CMakeFiles/fluids.dir/fluids.cpp.o"
+},
+{
+  "directory": "/home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/build_directory",
+  "command": "/usr/bin/c++   -O3 -Wredundant-move -Wpessimizing-move -o CMakeFiles/mesh.dir/mesh.cpp.o -c /home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/mesh.cpp",
   "file": "/home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/mesh.cpp",
   "output": "CMakeFiles/mesh.dir/mesh.cpp.o"
 },
 {
-  "directory": "/home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics",
-  "command": "/usr/bin/c++  -I/home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/stb -O3 -fopenmp -o CMakeFiles/raytracer.dir/raytracer.cpp.o -c /home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/raytracer.cpp",
-  "file": "/home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/raytracer.cpp",
-  "output": "CMakeFiles/raytracer.dir/raytracer.cpp.o"
+  "directory": "/home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/build_directory",
+  "command": "/usr/bin/c++   -O3 -Wredundant-move -Wpessimizing-move -o CMakeFiles/Ray.dir/Ray.cpp.o -c /home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/Ray.cpp",
+  "file": "/home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/Ray.cpp",
+  "output": "CMakeFiles/Ray.dir/Ray.cpp.o"
+},
+{
+  "directory": "/home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/build_directory",
+  "command": "/usr/bin/c++  -I/home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/stb -I/home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics -O3 -Wredundant-move -Wpessimizing-move -fopenmp -o CMakeFiles/simulator.dir/main.cpp.o -c /home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/main.cpp",
+  "file": "/home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/main.cpp",
+  "output": "CMakeFiles/simulator.dir/main.cpp.o"
 }
 ]

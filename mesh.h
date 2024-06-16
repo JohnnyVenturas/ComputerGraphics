@@ -1,14 +1,16 @@
+#include "Intersect.h"
+#include "ObjectProperties.h"
+#include "Ray.h"
+#include "Scene.h"
+#include "Vector.h"
 #include <algorithm>
 #include <cstring>
 #include <iostream>
 #include <stdio.h>
 #include <string>
 #include <vector>
-
-#ifndef RAYTRACER_FILE
-#define RAYTRACER_FILE 1
-#include "raytracer.h"
-#endif
+#ifndef MESH_H
+#define MESH_H
 
 class TriangleIndices {
   public:
@@ -28,61 +30,55 @@ class TriangleMesh;
 
 class BoundingBox {
   public:
-    
     Vector b_min, b_max;
     BoundingBox() {}
 
     BoundingBox(const Vector &b_min, const Vector &b_max)
         : b_min(b_min), b_max(b_max) {}
 
-    BoundingBox(const TriangleMesh &triangle_mesh) {
-        build_box(triangle_mesh);
-    }
+    BoundingBox(const TriangleMesh &triangle_mesh) { build_box(triangle_mesh); }
 
     BoundingBox(TriangleMesh &triangle_mesh, int left, int right) {
         build_box(triangle_mesh, left, right);
     }
 
-
     void build_box(const TriangleMesh &triangle_mesh);
     void build_box(TriangleMesh &triangle_mesh, int left, int right);
-    
-    bool intersect(const Ray &ray, double &dist) const;
 
+    bool intersect(const Ray &ray, double &dist) const;
 };
 
 class TriangleMesh;
 class BVH {
-private:
-  Vector __compute_barycenter(TriangleMesh &triangle_mesh, int idx);
-  void __build_bvh(BVH *cur_bvh, TriangleMesh &triangle_mesh, int left_val, int right_val);
+  private:
+    Vector __compute_barycenter(TriangleMesh &triangle_mesh, int idx);
+    void __build_bvh(BVH *cur_bvh, TriangleMesh &triangle_mesh, int left_val,
+                     int right_val);
 
-public:
-  BoundingBox * bbox;
-  BVH *left_child = nullptr, *right_child = nullptr;
-  int left, right;
+  public:
+    BoundingBox *bbox;
+    BVH *left_child = nullptr, *right_child = nullptr;
+    int left, right;
 
-  BVH() {} 
+    BVH() {}
 
-  BVH(TriangleMesh &triangle_mesh);
+    BVH(TriangleMesh &triangle_mesh);
 
-  void build_bvh(TriangleMesh &triangle_mesh);
-  bool intersect (const Ray &ray);
-
+    void build_bvh(TriangleMesh &triangle_mesh);
+    bool intersect(const Ray &ray);
 };
 
 class TriangleMesh : public virtual Geometry {
-private:
-    Intersect __intersect(const Ray &ray,int left, int right) const;
+  private:
+    Intersect __intersect(const Ray &ray, int left, int right) const;
 
-public:
+  public:
     ~TriangleMesh() {}
     TriangleMesh(){};
 
     TriangleMesh(const char *obj, const ObjectProperties &object_properties)
         : Geometry(object_properties) {
         readOBJ(obj);
-
     }
 
     BVH *root;
@@ -94,7 +90,7 @@ public:
     virtual Intersect intersect(const Ray &ray) const;
 
     bool bbox_intersect(const Ray &ray, const BoundingBox &bbox) const;
-    bool bvh_box_intersect(const Ray &ray) ;
+    bool bvh_box_intersect(const Ray &ray);
 
     std::vector<TriangleIndices> indices;
     std::vector<Vector> vertices;
@@ -103,3 +99,4 @@ public:
     std::vector<Vector> vertexcolors;
 };
 
+#endif

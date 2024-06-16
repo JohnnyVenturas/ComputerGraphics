@@ -1,4 +1,0 @@
-/home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/CMakeFiles/raytracer.dir
-/home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/CMakeFiles/mesh.dir
-/home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/CMakeFiles/edit_cache.dir
-/home/johnnyventuras/Desktop/EcolePolytechniqueLocal/Graphics/CMakeFiles/rebuild_cache.dir

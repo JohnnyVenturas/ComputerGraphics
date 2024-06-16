@@ -11,12 +11,9 @@
 #include <unordered_set>
 #include <vector>
 
-#ifndef RAYTRACER_FILE
-#define RAYTRACER_FILE 1
 #include "raytracer.h"
-#endif
 
-#define INTERPOLATION 0
+#define INTERPOLATION 1 
 
 #include "mesh.h"
 
@@ -369,12 +366,9 @@ Intersect TriangleMesh::__intersect(const Ray &ray, int left, int right) const {
 
         if(t > current_intersect.t) continue;
 
-
         Vector P = ray.O + t * ray.u;
-
         // Intersection normal (common behaviour normal)
         Vector Normal = alpha*normalA + beta*normalB + gamma* normalC;
-
         N.normalize();
         Normal.normalize();
 

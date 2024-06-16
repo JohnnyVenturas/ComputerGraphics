@@ -1,15 +1,17 @@
-#ifndef INTERSECT_FILE
-#define INTERSECT_FILE 1
+#ifndef GEOMETRY_H
+#define GEOMETRY_H 
+#include "ObjectProperties.h"
 #include "Intersect.h"
-#endif
-
-#ifndef RAYTRACER_FILE
-#define RAYTRACER_FILE
-#include "raytracer.h"
-#endif
-
+#include "Ray.h"
 class Geometry {
-public:
-    Geometry() {};
-    virtual Intersect intersect(const Ray &ray) const =0;
+  public:
+    ObjectProperties object_properties;
+
+    Geometry(){};
+    Geometry(const ObjectProperties &object_properties)
+        : object_properties(object_properties) {}
+
+    virtual Intersect intersect(const Ray &ray) const = 0;
 };
+
+#endif
