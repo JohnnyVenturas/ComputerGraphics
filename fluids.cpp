@@ -2,7 +2,7 @@
 // a namespace or change the name
 #include "Vector.h"
 #include "lbfgs.h"
-#include "polygon.h"
+#include "fluids.h"
 #include <cassert>
 #include <cmath>
 #include <math.h>
@@ -135,7 +135,7 @@ void power_clip(Polygon &poly, const Vector &p0, double w0, const Vector &p1,
                 double w1) {
 
     Polygon out_polygon;
-    assert(out_polygon.size() == 0);
+    // assert(out_polygon.size() == 0);
 
     for (size_t i = 0; i < poly.size(); ++i) {
 
@@ -230,8 +230,8 @@ std::vector<Vector> random_polygon(std::default_random_engine &gen, size_t n) {
     std::vector<Vector> vertices;
 
     for (int i = 0; i < n; ++i) {
-        double x = dist(gen);
-        double y = dist(gen);
+        double x = 0.5 + (dist(gen) - 0.5) * 0.45;
+        double y = 0.5 + (dist(gen) - 0.5) * 0.45;
         double z = 0;
         vertices.push_back(Vector(x, y, z));
     }
@@ -264,7 +264,7 @@ void draw_random_polygon(std::default_random_engine &gen) {
     std::vector<Vector> velocity(points.size());
 
     // double *weights = optimal_transport_fluids(points, gen);
-    //  double *weights = random_weights(gen, 100);
+    double *weights = random_weights(gen, points.size() + 1);
     // run_time_step(points, velocity, gen, 1);
 
     // std::vector<Polygon> polygon_voronoy = voronoy_diagram(points);
@@ -276,7 +276,7 @@ void draw_random_polygon(std::default_random_engine &gen) {
     // save_svg(polygon_power, "../tests/power.svg");
 
     for (int i = 0; i < 500; ++i) {
-        run_time_step(points, velocity, gen, 200, 2e-3, 4e-3, i);
+        run_time_step(points, velocity, weights, gen, 200, 2e-3, 4e-3, i);
     }
 
     // save_svg(polygons, "out.svg");
@@ -289,8 +289,8 @@ lbfgsfloatval_t evaluate(void *__points, const double *weights,
     const std::vector<Vector> &points =
         *static_cast<const std::vector<Vector> *>(__points);
 
-    assert(points.size() == __number_points);
-    assert(points.size() != 0);
+    // assert(points.size() == __number_points);
+    // assert(points.size() != 0);
 
     std::vector<Polygon> polygons = power_diagram(points, weights);
 
@@ -378,19 +378,19 @@ lbfgsfloatval_t evaluate_fluids(void *instance, const double *weights,
     OptimalTransportProperties &properties =
         *static_cast<OptimalTransportProperties *>(instance);
 
-    assert(__number_points == (properties.points.size() + 1));
+    // assert(__number_points == (properties.points.size() + 1));
 
     const double &desired_fluid_volume = properties.desired_fluid_volume;
     std::vector<Vector> &points = properties.points;
     std::vector<Polygon> polygons = power_diagram_circle(points, weights);
 
-    assert(polygons.size() > 0);
+    // assert(polygons.size() > 0);
 
     const size_t N = __number_points - 1;
 
     double w_air = weights[N];
 
-    assert(desired_fluid_volume == 0.25);
+    // assert(desired_fluid_volume == 0.25);
 
     const double desired_air_volume = 1 - desired_fluid_volume;
 
@@ -429,10 +429,11 @@ lbfgsfloatval_t evaluate_fluids(void *instance, const double *weights,
 }
 
 double *optimal_transport_fluids(std::vector<Vector> &points,
-                                 std::default_random_engine &gen) {
+                                 std::default_random_engine &gen,
+                                 double *weights) {
     size_t n = points.size();
 
-    double *weights = random_weights(gen, n + 1);
+    // double *weights = random_weights(gen, n + 1);
 
     // for (int i = 0; i < n + 1; ++i) {
     // std::cout << weights[i] << " ";
@@ -453,10 +454,11 @@ double *optimal_transport_fluids(std::vector<Vector> &points,
 }
 
 void run_time_step(std::vector<Vector> &points, std::vector<Vector> &velocity,
-                   std::default_random_engine &gen, const double mass,
-                   const double eps, const double dt, int frame_iter) {
+                   double *weights, std::default_random_engine &gen,
+                   const double mass, const double eps, const double dt,
+                   int frame_iter) {
 
-    double *weights = optimal_transport_fluids(points, gen);
+    weights = optimal_transport_fluids(points, gen, weights);
     std::vector<Polygon> polygons = power_diagram_circle(points, weights);
     Vector g(0, -9.81, 0);
 
@@ -484,7 +486,7 @@ void run_time_step(std::vector<Vector> &points, std::vector<Vector> &velocity,
         }
     }
 
-    save_frame(polygons, "output/out", frame_iter);
+    save_frame(polygons, "../final/out", frame_iter);
 }
 
 Polygon make_circle(const Vector &center, double radius) {

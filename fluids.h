@@ -80,8 +80,9 @@ double *optimal_transport_fluids(std::vector<Vector> &points,
                                  std::default_random_engine &gen);
 
 void run_time_step(std::vector<Vector> &points, std::vector<Vector> &velocity,
-                   std::default_random_engine &gen, const double mass,
-                   const double eps, const double dt, int frame_iter);
+                   double *weights, std::default_random_engine &gen,
+                   const double mass, const double eps, const double dt,
+                   int frame_iter);
 
 Vector compute_centroid(const Polygon &polygon);
 
